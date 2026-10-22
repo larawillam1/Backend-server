@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Top-Up Store</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+  body { background: #0a0a12; color: #ffffff; }
+
+  header { background: #05050a; border-bottom: 2px solid #1e6bff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+  .logo { font-size: 22px; font-weight: bold; color: #1e90ff; }
+  .logo span { color: #ffffff; }
+  nav a { color: #ffffff; text-decoration: none; margin-left: 16px; padding: 8px 16px; border-radius: 6px; }
+  nav a.signin { border: 1px solid #1e90ff; }
+  nav a.signup { background: #1e6bff; }
+  nav a:hover { opacity: 0.85; }
+
+  .hero { text-align: center; padding: 50px 20px; background: linear-gradient(135deg, #0a1a3a, #05050a); }
+  .hero h1 { font-size: 32px; margin-bottom: 10px; }
+  .hero h1 span { color: #1e90ff; }
+  .hero p { color: #b0c4de; }
+
+  .container { max-width: 1000px; margin: 0 auto; padding: 30px 20px; }
+  .game { background: #10101c; border: 1px solid #1e3a7a; border-radius: 12px; padding: 20px; margin-bottom: 30px; }
+  .game h2 { color: #1e90ff; margin-bottom: 16px; border-left: 4px solid #1e6bff; padding-left: 10px; }
+  .game h3 { color: #4db8ff; margin: 24px 0 14px; font-size: 18px; }
+
+  .prices { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+  .price-card { background: #0a1a3a; border: 2px solid #1e6bff; border-radius: 10px; padding: 16px; text-align: center; box-shadow: 0 0 12px rgba(30,107,255,0.35); }
+  .price-card .amount { font-size: 18px; font-weight: bold; }
+  .price-card .sub { color: #b0c4de; font-size: 13px; margin-top: 4px; }
+  .price-card .cost { color: #4db8ff; font-size: 20px; font-weight: bold; margin: 8px 0; }
+  .price-card button { background: #1e6bff; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+  .price-card button:hover { background: #3a82ff; }
+
+  footer { background: #05050a; border-top: 2px solid #1e6bff; padding: 24px; text-align: center; margin-top: 30px; }
+  footer h3 { color: #1e90ff; margin-bottom: 8px; }
+  footer p { color: #b0c4de; margin: 4px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Top<span>Up</span> Store</div>
+  <nav>
+    <a href="signin.html" class="signin">Sign In</a>
+    <a href="signup.html" class="signup">Sign Up</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Fast &amp; Easy <span>Game Top-Up</span></h1>
+  <p>Free Fire Diamonds and PUBG UC at the best prices</p>
+</section>
+
+<div class="container">
+
+  <div class="game">
+    <h2>Free Fire Diamonds</h2>
+    <div class="prices">
+      <div class="price-card"><div class="amount">25 Diamonds</div><div class="cost">Rs. 50</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">50 Diamonds</div><div class="cost">Rs. 70</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">115 Diamonds</div><div class="cost">Rs. 100</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">240 Diamonds</div><div class="cost">Rs. 200</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">355 Diamonds</div><div class="cost">Rs. 300</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">480 Diamonds</div><div class="cost">Rs. 400</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">610 Diamonds</div><div class="cost">Rs. 500</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">850 Diamonds</div><div class="cost">Rs. 700</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">965 Diamonds</div><div class="cost">Rs. 800</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">1090 Diamonds</div><div class="cost">Rs. 900</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">1240 Diamonds</div><div class="cost">Rs. 1000</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">1480 Diamonds</div><div class="cost">Rs. 1200</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">1850 Diamonds</div><div class="cost">Rs. 1500</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">2090 Diamonds</div><div class="cost">Rs. 1700</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">2530 Diamonds</div><div class="cost">Rs. 2000</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">3140 Diamonds</div><div class="cost">Rs. 2500</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">3770 Diamonds</div><div class="cost">Rs. 3000</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">5060 Diamonds</div><div class="cost">Rs. 4000</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">10120 Diamonds</div><div class="cost">Rs. 8000</div><button>Buy Now</button></div>
+    </div>
+
+    <h3>Memberships &amp; Passes</h3>
+    <div class="prices">
+      <div class="price-card"><div class="amount">Weekly Membership</div><div class="sub">445 Diamonds</div><div class="cost">Rs. 200</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">Monthly Membership</div><div class="sub">2500 Diamonds</div><div class="cost">Rs. 1000</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">Level Up Pass</div><div class="sub">1270 Diamonds</div><div class="cost">Rs. 650</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">Combo Pack</div><div class="sub">2945 Diamonds</div><div class="cost">Rs. 1200</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">Weekly Lite</div><div class="cost">Rs. 80</div><button>Buy Now</button></div>
+    </div>
+  </div>
+
+  <div class="game">
+    <h2>PUBG UC</h2>
+    <div class="prices">
+      <div class="price-card"><div class="amount">60 UC</div><div class="cost">Rs. 155</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">120 UC</div><div class="cost">Rs. 310</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">180 UC</div><div class="cost">Rs. 465</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">325 UC</div><div class="cost">Rs. 775</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">385 UC</div><div class="cost">Rs. 930</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">505 UC</div><div class="cost">Rs. 1240</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">660 UC</div><div class="cost">Rs. 1550</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">720 UC</div><div class="cost">Rs. 1705</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">780 UC</div><div class="cost">Rs. 1860</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">1440 UC</div><div class="cost">Rs. 3400</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">1800 UC</div><div class="cost">Rs. 3940</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">3850 UC</div><div class="cost">Rs. 7500</div><button>Buy Now</button></div>
+      <div class="price-card"><div class="amount">8100 UC</div><div class="cost">Rs. 16000</div><button>Buy Now</button></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <h3>Contact Us</h3>
+  <p>Phone / WhatsApp: <a href="https://wa.me/9779824806520" target="_blank" rel="noopener" style="color:#4db8ff;text-decoration:none;font-weight:bold;">9824806520</a></p>
+  <p>Email: <a href="mailto:sbidiamondsellernepal@gmail.com" style="color:#4db8ff;text-decoration:none;">sbidiamondsellernepal@gmail.com</a></p>
+  <p>&copy; 2026 TopUp Store. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
