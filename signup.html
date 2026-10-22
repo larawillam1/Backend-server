@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up - TopUp Store</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+  body { background: #0a0a12; color: #ffffff; min-height: 100vh; }
+  header { background: #05050a; border-bottom: 2px solid #1e6bff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+  .logo { font-size: 22px; font-weight: bold; color: #1e90ff; text-decoration: none; }
+  .logo span { color: #ffffff; }
+  nav a { color: #ffffff; text-decoration: none; margin-left: 16px; padding: 8px 16px; border-radius: 6px; }
+  nav a.signin { border: 1px solid #1e90ff; }
+  nav a.signup { background: #1e6bff; }
+
+  .box { max-width: 400px; margin: 40px auto; background: #10101c; border: 1px solid #1e3a7a; border-radius: 12px; padding: 28px 24px; box-shadow: 0 0 18px rgba(30,107,255,0.3); }
+  .box h1 { color: #1e90ff; font-size: 24px; margin-bottom: 6px; }
+  .box p.sub { color: #b0c4de; font-size: 14px; margin-bottom: 20px; }
+  label { display: block; font-size: 14px; margin: 14px 0 6px; color: #b0c4de; }
+  input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #1e6bff; background: #0a1a3a; color: #fff; font-size: 16px; }
+  input:focus { outline: none; border-color: #4db8ff; }
+  input.code { text-align: center; font-size: 28px; letter-spacing: 10px; font-weight: bold; }
+  button { width: 100%; margin-top: 20px; background: #1e6bff; color: #fff; border: none; padding: 13px; border-radius: 8px; font-size: 16px; cursor: pointer; }
+  button:hover { background: #3a82ff; }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
+  button.secondary { background: none; border: 1px solid #1e6bff; color: #4db8ff; margin-top: 12px; }
+  button.secondary:hover { background: #0a1a3a; }
+  button.link { background: none; border: none; color: #4db8ff; width: auto; padding: 0; margin: 14px 0 0; font-size: 14px; text-decoration: underline; }
+  .hidden { display: none; }
+  .msg { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 14px; line-height: 1.4; display: none; }
+  .msg.error { display: block; background: #3a1010; border: 1px solid #ff4d4d; color: #ffb3b3; }
+  .msg.ok { display: block; background: #0d2a1a; border: 1px solid #2ecc71; color: #b9f5cf; }
+  .msg.info { display: block; background: #0a1a3a; border: 1px solid #1e6bff; color: #b0c4de; }
+  #captcha { margin-top: 16px; }
+  .alt { text-align: center; margin-top: 18px; font-size: 14px; color: #b0c4de; }
+  .alt a { color: #4db8ff; text-decoration: none; }
+  .hint { font-size: 12px; color: #7f95b8; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">Top<span>Up</span> Store</a>
+  <nav>
+    <a href="signin.html" class="signin">Sign In</a>
+    <a href="signup.html" class="signup">Sign Up</a>
+  </nav>
+</header>
+
+<div class="box">
+
+  <!-- Step 1: email + password -->
+  <div id="step1">
+    <h1>Create Account</h1>
+    <p class="sub">Enter your email and choose a password. We will email you a 6-digit code.</p>
+
+    <form id="form1" novalidate>
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="you@gmail.com" required autocomplete="email" maxlength="254">
+
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="At least 8 characters" required minlength="8" maxlength="128" autocomplete="new-password">
+      <div class="hint">Use 8 or more characters. A mix of letters and numbers is best.</div>
+
+      <label for="confirm">Confirm Password</label>
+      <input type="password" id="confirm" placeholder="Type password again" required minlength="8" maxlength="128" autocomplete="new-password">
+
+      <button type="submit" id="btn1">Send Code</button>
+    </form>
+  </div>
+
+  <!-- Step 2: enter the code -->
+  <div id="step2" class="hidden">
+    <h1>Enter Code</h1>
+    <p class="sub">We sent a 6-digit code to <strong id="sentTo"></strong>. It expires in 10 minutes. Check your spam folder too.</p>
+
+    <form id="form2" novalidate>
+      <label for="code">6-digit code</label>
+      <input type="text" id="code" class="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="------" autocomplete="one-time-code" required>
+
+      <button type="submit" id="btn2">Verify &amp; Create Account</button>
+      <button type="button" id="resend" class="secondary" disabled>Resend code</button>
+    </form>
+    <button type="button" id="change" class="link">Use a different email</button>
+  </div>
+
+  <!-- Optional captcha (only shown when TURNSTILE_SITE_KEY is set) -->
+  <div id="captcha"></div>
+
+  <div class="msg" id="msg" role="status" aria-live="polite"></div>
+  <div class="alt">Already have an account? <a href="signin.html">Sign In</a></div>
+</div>
+
+<script type="module">
+  import { API_URL, TURNSTILE_SITE_KEY } from "./firebase-config.js";
+
+  const step1 = document.getElementById("step1");
+  const step2 = document.getElementById("step2");
+  const form1 = document.getElementById("form1");
+  const form2 = document.getElementById("form2");
+  const btn1 = document.getElementById("btn1");
+  const btn2 = document.getElementById("btn2");
+  const resendBtn = document.getElementById("resend");
+  const changeBtn = document.getElementById("change");
+  const msg = document.getElementById("msg");
+  const sentTo = document.getElementById("sentTo");
+  const codeInput = document.getElementById("code");
+
+  let currentEmail = "";
+  let currentPassword = "";
+  let countdownTimer = null;
+
+  // ---------- helpers ----------
+  function show(type, text) {
+    msg.className = "msg " + type;
+    msg.textContent = text;
+  }
+  function clearMsg() {
+    msg.className = "msg";
+    msg.textContent = "";
+  }
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  async function api(path, payload) {
+    if (!API_URL || API_URL.indexOf("PASTE_") === 0) {
+      return { ok: false, status: 0, data: { error: "The website is not connected to its server yet. Please contact the shop owner." } };
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 65000); // free hosts can take ~1 minute to wake up
+    try {
+      const res = await fetch(API_URL.replace(/\/+$/, "") + path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        credentials: "omit",
+        signal: controller.signal
+      });
+      let data = {};
+      try { data = await res.json(); } catch (_) {}
+      return { ok: res.ok && data.ok === true, status: res.status, data };
+    } catch (_) {
+      return { ok: false, status: 0, data: { error: "Cannot reach the server. Check your internet and try again." } };
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  // ---------- optional Cloudflare Turnstile captcha ----------
+  let captchaToken = "";
+  let captchaWidgetId = null;
+  if (TURNSTILE_SITE_KEY) {
+    window.onTurnstileLoad = function () {
+      captchaWidgetId = window.turnstile.render("#captcha", {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: "dark",
+        callback: function (token) { captchaToken = token; },
+        "expired-callback": function () { captchaToken = ""; },
+        "error-callback": function () { captchaToken = ""; }
+      });
+    };
+    const s = document.createElement("script");
+    s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad&render=explicit";
+    s.async = true;
+    s.defer = true;
+    document.head.appendChild(s);
+  }
+  function resetCaptcha() {
+    captchaToken = "";
+    if (TURNSTILE_SITE_KEY && window.turnstile && captchaWidgetId !== null) {
+      window.turnstile.reset(captchaWidgetId);
+    }
+  }
+
+  // ---------- resend countdown ----------
+  function startCountdown(seconds) {
+    clearInterval(countdownTimer);
+    let left = seconds;
+    resendBtn.disabled = true;
+    resendBtn.textContent = "Resend code in " + left + "s";
+    countdownTimer = setInterval(function () {
+      left -= 1;
+      if (left <= 0) {
+        clearInterval(countdownTimer);
+        resendBtn.disabled = false;
+        resendBtn.textContent = "Resend code";
+      } else {
+        resendBtn.textContent = "Resend code in " + left + "s";
+      }
+    }, 1000);
+  }
+
+  // ---------- request a code (used by step 1 and resend) ----------
+  async function requestCode() {
+    if (TURNSTILE_SITE_KEY && !captchaToken) {
+      show("error", "Please complete the security check first.");
+      return false;
+    }
+    show("info", "Sending code... the first request can take up to a minute if the server was asleep.");
+    const result = await api("/api/signup/start", { email: currentEmail, turnstileToken: captchaToken });
+    resetCaptcha();
+    if (!result.ok) {
+      show("error", (result.data && result.data.error) || "Something went wrong. Please try again.");
+      return false;
+    }
+    show("ok", result.data.message || "Code sent. Check your email.");
+    startCountdown(60);
+    return true;
+  }
+
+  // ---------- step 1 ----------
+  form1.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    clearMsg();
+    const email = document.getElementById("email").value.trim().toLowerCase();
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm").value;
+
+    if (!EMAIL_RE.test(email)) { show("error", "Please enter a valid email address."); return; }
+    if (password.length < 8) { show("error", "Password must be at least 8 characters."); return; }
+    if (password !== confirm) { show("error", "Passwords do not match."); return; }
+
+    currentEmail = email;
+    currentPassword = password;
+
+    btn1.disabled = true;
+    btn1.textContent = "Sending...";
+    const sent = await requestCode();
+    btn1.disabled = false;
+    btn1.textContent = "Send Code";
+
+    if (sent) {
+      sentTo.textContent = currentEmail;
+      step1.classList.add("hidden");
+      step2.classList.remove("hidden");
+      codeInput.value = "";
+      codeInput.focus();
+    }
+  });
+
+  // ---------- step 2 ----------
+  codeInput.addEventListener("input", function () {
+    codeInput.value = codeInput.value.replace(/\D/g, "").slice(0, 6);
+  });
+
+  form2.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const code = codeInput.value.trim();
+    if (!/^\d{6}$/.test(code)) { show("error", "Please enter the 6-digit code."); return; }
+
+    btn2.disabled = true;
+    btn2.textContent = "Verifying...";
+    show("info", "Checking your code...");
+    const result = await api("/api/signup/verify", { email: currentEmail, code: code, password: currentPassword });
+    btn2.disabled = false;
+    btn2.textContent = "Verify & Create Account";
+
+    if (result.ok) {
+      currentPassword = "";
+      form1.reset();
+      form2.reset();
+      clearInterval(countdownTimer);
+      show("ok", (result.data.message || "Account created!") + " Taking you to Sign In...");
+      btn2.disabled = true;
+      resendBtn.disabled = true;
+      setTimeout(function () { window.location.href = "signin.html"; }, 2200);
+      return;
+    }
+    show("error", (result.data && result.data.error) || "Something went wrong. Please try again.");
+    if (result.status === 409) {
+      setTimeout(function () { window.location.href = "signin.html"; }, 2500);
+    }
+  });
+
+  resendBtn.addEventListener("click", async function () {
+    clearMsg();
+    resendBtn.disabled = true;
+    const sent = await requestCode();
+    if (!sent) {
+      resendBtn.disabled = false;
+      resendBtn.textContent = "Resend code";
+    }
+  });
+
+  changeBtn.addEventListener("click", function () {
+    clearInterval(countdownTimer);
+    clearMsg();
+    currentPassword = "";
+    step2.classList.add("hidden");
+    step1.classList.remove("hidden");
+    form1.reset();
+    document.getElementById("email").focus();
+  });
+</script>
+
+</body>
+  </html>
+  
