@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In - TopUp Store</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+  body { background: #0a0a12; color: #ffffff; min-height: 100vh; }
+  header { background: #05050a; border-bottom: 2px solid #1e6bff; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+  .logo { font-size: 22px; font-weight: bold; color: #1e90ff; text-decoration: none; }
+  .logo span { color: #ffffff; }
+  nav a { color: #ffffff; text-decoration: none; margin-left: 16px; padding: 8px 16px; border-radius: 6px; }
+  nav a.signin { border: 1px solid #1e90ff; }
+  nav a.signup { background: #1e6bff; }
+
+  .box { max-width: 400px; margin: 40px auto; background: #10101c; border: 1px solid #1e3a7a; border-radius: 12px; padding: 28px 24px; box-shadow: 0 0 18px rgba(30,107,255,0.3); }
+  .box h1 { color: #1e90ff; font-size: 24px; margin-bottom: 6px; }
+  .box p.sub { color: #b0c4de; font-size: 14px; margin-bottom: 20px; }
+  label { display: block; font-size: 14px; margin: 14px 0 6px; color: #b0c4de; }
+  input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #1e6bff; background: #0a1a3a; color: #fff; font-size: 16px; }
+  input:focus { outline: none; border-color: #4db8ff; }
+  button { width: 100%; margin-top: 20px; background: #1e6bff; color: #fff; border: none; padding: 13px; border-radius: 8px; font-size: 16px; cursor: pointer; }
+  button:hover { background: #3a82ff; }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
+  button.link { background: none; border: none; color: #4db8ff; width: auto; padding: 0; margin: 14px 0 0; font-size: 14px; text-decoration: underline; }
+  .msg { margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 14px; line-height: 1.4; display: none; }
+  .msg.error { display: block; background: #3a1010; border: 1px solid #ff4d4d; color: #ffb3b3; }
+  .msg.ok { display: block; background: #0d2a1a; border: 1px solid #2ecc71; color: #b9f5cf; }
+  .alt { text-align: center; margin-top: 18px; font-size: 14px; color: #b0c4de; }
+  .alt a { color: #4db8ff; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">Top<span>Up</span> Store</a>
+  <nav>
+    <a href="signin.html" class="signin">Sign In</a>
+    <a href="signup.html" class="signup">Sign Up</a>
+  </nav>
+</header>
+
+<div class="box">
+  <h1>Welcome Back</h1>
+  <p class="sub">Sign in to your account.</p>
+
+  <form id="signinForm" novalidate>
+    <label for="email">Email</label>
+    <input type="email" id="email" placeholder="you@gmail.com" required autocomplete="email" maxlength="254">
+
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="Your password" required autocomplete="current-password" maxlength="128">
+
+    <button type="submit" id="btn">Sign In</button>
+  </form>
+  <button type="button" class="link" id="forgot">Forgot password?</button>
+
+  <div class="msg" id="msg" role="status" aria-live="polite"></div>
+  <div class="alt">New here? <a href="signup.html">Create an account</a></div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { firebaseConfig } from "./firebase-config.js";
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const form = document.getElementById("signinForm");
+  const btn = document.getElementById("btn");
+  const msg = document.getElementById("msg");
+  const forgotBtn = document.getElementById("forgot");
+
+  function show(type, text) {
+    msg.className = "msg " + type;
+    msg.textContent = text;
+  }
+
+  function friendlyError(code) {
+    switch (code) {
+      case "auth/invalid-credential":
+      case "auth/wrong-password":
+      case "auth/user-not-found": return "Wrong email or password.";
+      case "auth/invalid-email": return "Please enter a valid email address.";
+      case "auth/user-disabled": return "This account has been disabled.";
+      case "auth/too-many-requests": return "Too many tries. Please wait a few minutes.";
+      case "auth/network-request-failed": return "Network problem. Check your internet and try again.";
+      default: return "Something went wrong. Please try again.";
+    }
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    btn.disabled = true;
+    btn.textContent = "Signing in...";
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      // Accounts made through the OTP sign-up are always verified.
+      // Anything else (for example a direct call to Firebase) is refused here.
+      if (!cred.user.emailVerified) {
+        await signOut(auth);
+        show("error", "This account is not verified. Please create your account again using the Sign Up page.");
+        return;
+      }
+      show("ok", "Signed in successfully. Redirecting...");
+      setTimeout(() => { window.location.href = "index.html"; }, 1000);
+    } catch (err) {
+      show("error", friendlyError(err.code));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Sign In";
+    }
+  });
+
+  forgotBtn.addEventListener("click", async () => {
+    const email = document.getElementById("email").value.trim();
+    if (!email) {
+      show("error", "Type your email above first, then tap Forgot password.");
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (err) {
+      if (err.code === "auth/invalid-email") {
+        show("error", "Please enter a valid email address.");
+        return;
+      }
+      if (err.code === "auth/too-many-requests" || err.code === "auth/network-request-failed") {
+        show("error", friendlyError(err.code));
+        return;
+      }
+      // For any other error, show the same message so nobody can learn which emails have accounts.
+    }
+    show("ok", "If an account exists for " + email + ", a password reset link has been sent. Check your inbox and spam folder.");
+  });
+</script>
+
+</body>
+</html>
